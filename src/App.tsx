@@ -361,8 +361,33 @@ export default function App() {
       },
     });
 
+    // Keep browser sessions converged even when Supabase Realtime publication
+    // settings are unavailable. Realtime remains the fast path; polling is the
+    // automatic recovery path.
+    const syncInterval = window.setInterval(async () => {
+      const res = await fetchBlockRequestsFromSupabase();
+      if (!isMounted || !res.fromSupabase) return;
+
+      setAllRequests((current) => {
+        const serverIds = new Set(res.requests.map((request) => request.id));
+        const localOnly = current.filter((request) => !serverIds.has(request.id));
+        const merged = [...localOnly, ...res.requests];
+        saveStoredRequests(merged);
+        return merged;
+      });
+
+      setSyncState((previous) => ({
+        ...previous,
+        status: previous.activeChannel ? previous.status : 'SYNCED',
+        lastSyncedAt: new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST',
+        errorMessage: null,
+        pendingSyncCount: 0,
+      }));
+    }, 5000);
+
     return () => {
       isMounted = false;
+      window.clearInterval(syncInterval);
       cleanupRealtime();
     };
   }, []);
