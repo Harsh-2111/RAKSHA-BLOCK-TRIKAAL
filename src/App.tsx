@@ -243,10 +243,11 @@ export default function App() {
         });
 
         setSyncState({
-          isConnected: true,
-          isRealtimeActive: true,
-          status: 'CONNECTED',
-          lastSyncedAt: `${now} IST`,
+          status: res.fromSupabase ? 'CONNECTED' : 'OFFLINE_FALLBACK',
+          lastSyncedAt: res.fromSupabase ? `${now} IST` : null,
+          activeChannel: false,
+          errorMessage: res.fromSupabase ? null : res.error || 'Supabase data unavailable; local fallback is active.',
+          pendingSyncCount: 0,
         });
       } catch (err: any) {
         console.warn('Supabase initial fetch failed, using local fallback cache:', err);
@@ -381,11 +382,15 @@ export default function App() {
         minute: '2-digit',
         second: '2-digit',
       });
+      if (!res.fromSupabase) {
+        throw new Error(res.error || 'Supabase data unavailable; local fallback is active.');
+      }
       setSyncState({
-        isConnected: true,
-        isRealtimeActive: true,
         status: 'SYNCED',
         lastSyncedAt: `${now} IST`,
+        activeChannel: true,
+        errorMessage: null,
+        pendingSyncCount: 0,
       });
       showToast('Database synchronized with Supabase cloud successfully.', 'success');
     } catch (err: any) {
