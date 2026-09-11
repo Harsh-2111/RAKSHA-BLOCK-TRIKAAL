@@ -823,6 +823,23 @@ export const INITIAL_BLOCK_REQUESTS: BlockRequest[] = [
 const STORAGE_KEY = 'raksha_block_requests_v3_pan_india';
 const CURRENT_USER_KEY = 'raksha_block_current_user_v1';
 
+export function normalizePersonName(value?: string): string | undefined {
+  if (!value) return value;
+  return value
+    .replace(/Rajeshwar Sharma/g, 'Harsh Savalia')
+    .replace(/Ananya Sengupta/g, 'Khush Patel')
+    .replace(/Vikramaditya Rao/g, 'Mann Butani')
+    .replace(/Mahendra P\. Verma/g, 'Niyati Joshi')
+    .replace(/Sandeep Solanki/g, 'Tisha Chandnani')
+    .replace(/Nilesh Bhavsar/g, 'Aditya Chavan')
+    .replace(/Aniket Deshmukh/g, 'Harsh Savalia')
+    .replace(/Suhas Kulkarni/g, 'Khush Patel')
+    .replace(/Subhashis Banerjee/g, 'Mann Butani')
+    .replace(/Debabrata Roy/g, 'Niyati Joshi')
+    .replace(/K\. Murugan/g, 'Tisha Chandnani')
+    .replace(/R\. Senthil Kumar/g, 'Aditya Chavan');
+}
+
 export function getStoredRequests(): BlockRequest[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -844,7 +861,13 @@ export function getStoredRequests(): BlockRequest[] {
     if (hasNew) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     }
-    return parsed;
+    const normalized = parsed.map((request: BlockRequest) => ({
+      ...request,
+      applicantName: normalizePersonName(request.applicantName) || request.applicantName,
+      reviewedBy: normalizePersonName(request.reviewedBy),
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
   } catch (err) {
     console.error('Failed to read from localStorage', err);
     return INITIAL_BLOCK_REQUESTS;
@@ -873,7 +896,8 @@ export function getStoredUser(): User | null {
   try {
     const raw = localStorage.getItem(CURRENT_USER_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const user = JSON.parse(raw) as User;
+    return { ...user, name: normalizePersonName(user.name) || user.name };
   } catch {
     return null;
   }

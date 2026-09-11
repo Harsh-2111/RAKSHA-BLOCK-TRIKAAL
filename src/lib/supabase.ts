@@ -1,7 +1,7 @@
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import { BlockRequest, User, UserRole, Department, AiScheduleRecord, SupabaseSyncState } from '../types';
-import { INITIAL_BLOCK_REQUESTS, OFFICIAL_ROLES } from '../data/mockData';
+import { INITIAL_BLOCK_REQUESTS, OFFICIAL_ROLES, normalizePersonName } from '../data/mockData';
 
 // Pre-configured Production Supabase Credentials
 const getEnv = (key: string, fallback: string): string => {
@@ -74,7 +74,7 @@ export function dbToBlockRequest(row: any): BlockRequest {
   return {
     id: storedRequest.request_id ?? storedRequest.id ?? storedRequest.block_id ?? `RB-REQ-${Date.now()}`,
     department: (normalizedDepartment === 'S&T' || normalizedDepartment === 'S & T' ? 'ST' : normalizedDepartment) as Department,
-    applicantName: storedRequest.applicant_name ?? storedRequest.applicantName ?? 'Railway Official',
+    applicantName: normalizePersonName(storedRequest.applicant_name ?? storedRequest.applicantName ?? 'Railway Official') || 'Railway Official',
     applicantDesignation: storedRequest.applicant_designation ?? storedRequest.applicantDesignation ?? 'Sr. Section Engineer',
     zone: resolvedZone,
     zoneCode: resolvedZoneCode,
@@ -112,7 +112,7 @@ export function dbToBlockRequest(row: any): BlockRequest {
     status: normalizedStatus as BlockRequest['status'],
     submittedAt: storedRequest.submitted_at ?? storedRequest.submittedAt ?? storedRequest.created_at ?? new Date().toISOString(),
     reviewedAt: storedRequest.reviewed_at ?? storedRequest.reviewedAt ?? undefined,
-    reviewedBy: storedRequest.reviewed_by ?? storedRequest.reviewedBy ?? undefined,
+    reviewedBy: normalizePersonName(storedRequest.reviewed_by ?? storedRequest.reviewedBy),
     approvedStartTime: storedRequest.approved_start_time ?? storedRequest.approvedStartTime ?? undefined,
     approvedEndTime: storedRequest.approved_end_time ?? storedRequest.approvedEndTime ?? undefined,
     approvedDurationMinutes: storedRequest.approved_duration_minutes ?? storedRequest.approvedDurationMinutes ?? undefined,
@@ -148,7 +148,7 @@ export function blockRequestToDb(req: BlockRequest): Record<string, any> {
 export function dbToUserProfile(row: any): User {
   return {
     id: row.id || `usr-${row.role?.toLowerCase() || 'off'}`,
-    name: row.name || 'Railway Official',
+    name: normalizePersonName(row.name || 'Railway Official') || 'Railway Official',
     designation: row.designation || 'Section Officer',
     role: (row.role || 'ENG_OFFICER') as UserRole,
     department: (row.department || 'ENGINEERING') as Department | 'ADMIN',
