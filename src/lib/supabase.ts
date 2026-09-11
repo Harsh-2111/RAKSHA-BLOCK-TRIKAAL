@@ -720,6 +720,7 @@ export function setupRealtimeSync(callbacks: {
         pendingSyncCount: 0,
       });
     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+      console.warn('Supabase Realtime subscription failed:', err?.message || status);
       callbacks.onStatusChange({
         status: 'OFFLINE_FALLBACK',
         lastSyncedAt: null,
@@ -728,6 +729,7 @@ export function setupRealtimeSync(callbacks: {
         pendingSyncCount: 0,
       });
     } else if (status === 'CLOSED') {
+      console.warn('Supabase Realtime channel closed; polling fallback remains active.');
       callbacks.onStatusChange({
         status: 'OFFLINE_FALLBACK',
         lastSyncedAt: null,
