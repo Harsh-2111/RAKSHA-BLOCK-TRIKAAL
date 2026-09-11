@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Sparkles, Train, ShieldCheck } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
 import { BlockRequest, User } from '../types';
 import { AiCoPilotRecommendationEngine } from './AiCoPilotRecommendationEngine';
 
@@ -45,13 +45,7 @@ export const AiCoPilotModal: React.FC<AiCoPilotModalProps> = ({
                 <h3 className="font-bold text-sm sm:text-base text-white tracking-tight break-words">
                   AI Co-Pilot Decision Desk & Train Simulation
                 </h3>
-                <span className="bg-amber-400 text-blue-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">
-                  Admin Authority
-                </span>
               </div>
-              <p className="text-[10px] sm:text-xs text-blue-200 leading-relaxed">
-                Indian Railways Delhi Division • Real-Time Movement Impact & Action Directives
-              </p>
             </div>
           </div>
 
@@ -81,11 +75,7 @@ export const AiCoPilotModal: React.FC<AiCoPilotModalProps> = ({
             onFeedbackToast={onFeedbackToast}
           />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-200 text-xs text-slate-500">
-            <div className="flex items-start space-x-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>All directives write directly to Supabase with WebSocket notification dispatch.</span>
-            </div>
+          <div className="flex justify-end pt-2 border-t border-slate-200">
             <button
               type="button"
               onClick={onClose}

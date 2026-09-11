@@ -322,31 +322,13 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
               <span className="font-bold text-sm text-[#000075] tracking-tight break-words">
                 AI Co-Pilot Recommendation Engine
               </span>
-              <span className="bg-amber-400 text-blue-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-2xs uppercase">
-                Main Control Only
-              </span>
             </div>
             <span className="text-[11px] text-slate-500 block">
-              Autonomous corridor optimization for Requisition{' '}
+              Requisition{' '}
               <strong className="font-mono text-blue-950 font-bold">{request.id}</strong> (
               {request.section})
             </span>
           </div>
-        </div>
-
-        {/* Live delay tag */}
-        <div className="flex-shrink-0 max-w-full">
-          <span className="inline-flex flex-wrap items-center px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-[#000075] text-white shadow-xs">
-            <span className="mr-1.5">🚆</span>
-            <span>Estimated Delay: </span>
-            <span className="text-amber-300 font-mono ml-1 font-bold">
-              {impact.passengerDelayMinutes}m Passenger
-            </span>
-            <span className="mx-1.5 text-blue-300">|</span>
-            <span className="text-emerald-300 font-mono font-bold">
-              {impact.freightDelayMinutes}m Freight
-            </span>
-          </span>
         </div>
       </div>
 
@@ -362,9 +344,8 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
           <span className="font-bold text-slate-900 text-xs flex items-start space-x-1.5">
             <Zap className="w-4 h-4 text-amber-500" />
-            <span>AI Real-Time Optimization Directives (3 Actionable Recommendations)</span>
+            <span>Optimization Actions</span>
           </span>
-          <span className="text-[11px] text-slate-500">Click any action to apply & sync instantly</span>
         </div>
 
         {/* ==================================================== */}
@@ -380,7 +361,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
         >
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1.5 flex-1">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start flex-wrap gap-2">
                 <div className="w-6 h-6 rounded-md bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
                   1
                 </div>
@@ -403,27 +384,24 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
               <p className="text-[11px] text-slate-600 leading-relaxed pl-8">
                 {isNightShift ? (
                   <span>
-                    ✓ Current approved slot (<strong>01:00 - 04:00 hrs</strong>) is optimally positioned in
-                    the zero-passenger corridor window. No passenger train will be regulated or rerouted.
+                    ✓ Approved slot is already in the zero-passenger night window.
                   </span>
                 ) : (
                   <span>
-                    The current schedule (
+                    Current schedule (
                     <strong>
                       {request.requestedStartTime} - {request.requestedEndTime}
                     </strong>
-                    ) generates an estimated{' '}
-                    <strong className="text-red-700">{impact.passengerDelayMinutes} mins</strong> passenger
-                    delay and impacts {impact.passengerTrainsRerouted} express train(s). Shifting to the
-                    standard night maintenance window (<strong>01:00 - 04:00 hrs</strong>) brings passenger
-                    train detention to <strong className="text-emerald-700 font-bold">0 minutes</strong>.
+                    ) causes an estimated <strong className="text-red-700">{impact.passengerDelayMinutes} mins</strong>{' '}
+                    passenger delay. Shift to <strong>01:00 - 04:00 hrs</strong> for{' '}
+                    <strong className="text-emerald-700 font-bold">0 minutes</strong> delay.
                   </span>
                 )}
               </p>
 
               {/* Delay delta comparison pill */}
-              <div className="pl-8 pt-1 flex items-center space-x-2 text-[11px]">
-                <span className="text-slate-500">Detention Comparison:</span>
+              <div className="pl-8 pt-1 flex flex-wrap items-center gap-2 text-[11px]">
+                <span className="text-slate-500">Impact:</span>
                 <span className="line-through text-red-600 font-mono font-medium">
                   {impact.passengerDelayMinutes}m passenger
                 </span>
@@ -434,13 +412,13 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
               </div>
             </div>
 
-            <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0">
+            <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0 w-full sm:w-auto">
               <button
                 type="button"
                 id="btn-apply-night-shift"
                 disabled={isProcessingShift || isNightShift}
                 onClick={handleApplyNightShift}
-                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                className={`inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all shadow-xs cursor-pointer w-full sm:w-auto ${
                   isNightShift
                     ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default opacity-80'
                     : 'bg-[#000075] hover:bg-blue-900 active:bg-blue-950 text-white'
@@ -469,7 +447,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
         >
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1.5 flex-1">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start flex-wrap gap-2">
                 <div className="w-6 h-6 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">
                   2
                 </div>
@@ -485,10 +463,8 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
               </div>
 
               <p className="text-[11px] text-slate-600 leading-relaxed pl-8">
-                Operating safety regulations require speed control on adjacent tracks during{' '}
-                <strong>{request.workCategory}</strong> between KM {request.startKm} - {request.endKm}.
-                Auto-generate an official Caution Order (Form T/409) to protect track maintenance personnel
-                and passing rakes.
+                Add a Form T/409 speed restriction for <strong>{request.workCategory}</strong> between KM{' '}
+                {request.startKm} - {request.endKm}.
               </p>
 
               {/* Speed selector & editable order draft */}
@@ -527,25 +503,25 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 min-w-0">
                   <input
                     type="text"
                     value={customTsrText}
                     onChange={(e) => setCustomTsrText(e.target.value)}
-                    className="flex-1 text-[11px] font-mono border border-slate-300 rounded px-2.5 py-1 bg-slate-50 focus:bg-white focus:ring-1 focus:ring-amber-500"
+                    className="flex-1 min-w-0 text-[11px] font-mono border border-slate-300 rounded px-2.5 py-1 bg-slate-50 focus:bg-white focus:ring-1 focus:ring-amber-500"
                     placeholder="Draft TSR text..."
                   />
                 </div>
               </div>
             </div>
 
-            <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0">
+            <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0 w-full sm:w-auto">
               <button
                 type="button"
                 id="btn-attach-tsr-caution"
                 disabled={isProcessingTsr}
                 onClick={handleAttachTsr}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 transition-all shadow-xs cursor-pointer w-full sm:w-auto"
                 title="Attach TSR Caution Order to requisition and persist to Supabase"
               >
                 {isProcessingTsr ? (
@@ -572,7 +548,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
         >
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1.5 flex-1">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start flex-wrap gap-2">
                 <div className="w-6 h-6 rounded-md bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-xs">
                   3
                 </div>
@@ -590,12 +566,11 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
               {bundleTarget ? (
                 <div className="pl-8 space-y-1.5">
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    AI engine detected an aligned requisition from{' '}
+                    Aligned requisition from{' '}
                     <strong className="text-indigo-900 font-bold">
                       {bundleTarget.department} ({bundleTarget.id})
                     </strong>{' '}
-                    on {bundleTarget.section}. Synchronizing track maintenance with OHE de-energization or
-                    signalling testing inside one combined mega-window saves ~
+                    on {bundleTarget.section}. Combined work saves ~
                     <strong className="text-emerald-700 font-bold">
                       {Math.min(request.durationMinutes, bundleTarget.durationMinutes)} mins
                     </strong>{' '}
@@ -630,13 +605,13 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
             </div>
 
             {bundleTarget && (
-              <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0">
+              <div className="sm:self-center flex-shrink-0 pl-8 sm:pl-0 w-full sm:w-auto">
                 <button
                   type="button"
                   id="btn-bundle-approve-both"
                   disabled={isProcessingBundle || request.aiOptimized}
                   onClick={handleBundleAndApprove}
-                  className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                  className={`inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all shadow-xs cursor-pointer w-full sm:w-auto ${
                     request.aiOptimized
                       ? 'bg-indigo-100 text-indigo-800 border border-indigo-300 cursor-default'
                       : 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white'
