@@ -312,7 +312,7 @@ export default function App() {
 
           showToast(`Real-time Sync: New ${record.department} request ${record.id} received.`, 'info');
         } else if (changeType === 'UPDATE') {
-          if (record.status === 'COMPLETED') {
+          if (record.status === 'COMPLETED' || record.status === 'REJECTED') {
             setAllRequests((prev) => {
               const updated = prev.filter((request) => request.id !== record.id);
               saveStoredRequests(updated);
@@ -328,22 +328,17 @@ export default function App() {
 
           const isApproved = record.status === 'APPROVED';
           const isModified = record.status === 'MODIFIED_APPROVED';
-          const isRejected = record.status === 'REJECTED';
 
           const notifType: NotificationType = isApproved
             ? 'STATUS_APPROVED'
             : isModified
             ? 'STATUS_MODIFIED'
-            : isRejected
-            ? 'STATUS_REJECTED'
             : 'SYSTEM';
 
           const title = isApproved
             ? `Block Sanctioned by Main Control`
             : isModified
             ? `Block Modified & Sanctioned`
-            : isRejected
-            ? `Block Requisition Rejected`
             : `Requisition ${record.id} Updated`;
 
           const timeWindow = `${record.approvedStartTime || record.requestedStartTime} - ${
@@ -354,8 +349,6 @@ export default function App() {
             ? `🔔 ${record.id} has been APPROVED by Section Control for ${timeWindow}.`
             : isModified
             ? `🔔 ${record.id} modified to window ${timeWindow}. Remarks: ${record.controllerRemarks || 'Corridor sync'}`
-            : isRejected
-            ? `⚠️ ${record.id} rejected. Reason: ${record.controllerRemarks || 'Corridor traffic congestion'}`
             : `Requisition ${record.id} status changed to ${record.status}.`;
 
           addNotification({
@@ -524,8 +517,10 @@ export default function App() {
       return;
     }
 
-    // Optimistically update local state & cache
-    const updated = allRequests.map((r) => (r.id === updatedReq.id ? updatedReq : r));
+    // Optimistically update local state & cache. Rejected blocks leave the active register.
+    const updated = updatedReq.status === 'REJECTED'
+      ? allRequests.filter((r) => r.id !== updatedReq.id)
+      : allRequests.map((r) => (r.id === updatedReq.id ? updatedReq : r));
     setAllRequests(updated);
     saveStoredRequests(updated);
 
@@ -558,7 +553,9 @@ export default function App() {
     });
 
     try {
-      const dbRes = await updateBlockRequestInSupabase(updatedReq);
+      const dbRes = updatedReq.status === 'REJECTED'
+        ? await deleteBlockRequestInSupabase(updatedReq.id)
+        : await updateBlockRequestInSupabase(updatedReq);
       if (dbRes.success) {
         showToast(`Requisition ${updatedReq.id} ${actionText} & synced to Supabase.`, 'success');
       } else {
