@@ -8,7 +8,6 @@ import {
   Shield,
   Lock,
   CheckCircle2,
-  FileText,
   AlertTriangle,
   Clock,
   UserCheck,
@@ -19,7 +18,6 @@ import {
   Phone,
   Building2,
   Info,
-  ChevronRight,
   ShieldAlert,
   Flame,
   Check,
@@ -39,85 +37,6 @@ interface LoginPortalProps {
   supabaseState?: SupabaseSyncState;
 }
 
-interface SafetyCircular {
-  id: string;
-  circularNo: string;
-  date: string;
-  title: string;
-  category: 'SAFETY' | 'TRACTION' | 'OPERATING' | 'SIGNALLING';
-  department: string;
-  summary: string;
-  details: string[];
-  mandatoryAction: string;
-}
-
-const SAFETY_CIRCULARS: SafetyCircular[] = [
-  {
-    id: 'circ-1',
-    circularNo: '2026/RB/SAFETY/04',
-    date: '15-FEB-2026',
-    title: 'Mandatory Pre-Block Joint Inspection (P-Way & S&T)',
-    category: 'SAFETY',
-    department: 'Railway Board • Safety Directorate',
-    summary:
-      'Compulsory physical inspection of track points, track circuits, and fouling marks before applying for automatic corridor block sanction.',
-    details: [
-      'Site Engineers (P-Way) and Signal Inspectors must jointly verify point clip locking.',
-      'Disconnection memo must be digitally exchanged and recorded in RAKSHA-BLOCK.',
-      'No line clear shall be granted by Section Controller without dual-signature clearance.',
-    ],
-    mandatoryAction: 'Verify dual clearance memo before Line Clear authorization.',
-  },
-  {
-    id: 'circ-2',
-    circularNo: '2026/NR/TRD/OHE-PTW-11',
-    date: '02-FEB-2026',
-    title: '25kV AC Traction Power Shut-Down Protocol & PTW Guidelines',
-    category: 'TRACTION',
-    department: 'Electrical (TRD)',
-    summary:
-      'Rigorous Permit to Work (PTW) checklist and discharge rod bonding for maintenance within 2.0 meters of 25kV OHE live equipment.',
-    details: [
-      'Power block must be confirmed isolated by TPC (Traction Power Controller) before work starts.',
-      'Two discharge earthing rods must be affixed on either side of the work site.',
-      'Induction voltage monitoring mandatory for parallel 25kV / 2x25kV feeder lines.',
-    ],
-    mandatoryAction: 'Digital PTW issuance required for all heavy machinery operations.',
-  },
-  {
-    id: 'circ-3',
-    circularNo: '2026/DLI/OPTG/CORR-08',
-    date: '10-JAN-2026',
-    title: 'Automated Corridor Bundling Protocol under GR & SR Rule 4.12',
-    category: 'OPERATING',
-    department: 'Delhi Division • DOM Office',
-    summary:
-      'AI CP-SAT solver synchronization guidelines to combine Engineering, S&T, and TRD requests into shadow maintenance corridors.',
-    details: [
-      'Target maximum 180-minute window for high-density Delhi-Ghaziabad-Aligarh route.',
-      'Freight rake staging on loop lines must be scheduled 45 minutes prior to block inception.',
-      'Automatic TSR (Temporary Speed Restriction) caution orders published immediately upon block approval.',
-    ],
-    mandatoryAction: 'CP-SAT optimization must be reviewed by Section Controller prior to sanction.',
-  },
-  {
-    id: 'circ-4',
-    circularNo: '2026/RB/SIG/SIL4-AUTO',
-    date: '28-DEC-2025',
-    title: 'Safety Integrity Level (SIL-4) Virtual Protection in Section Control',
-    category: 'SIGNALLING',
-    department: 'Railway Board • S&T Directorate',
-    summary:
-      'Enforcement of SIL-4 virtual interlocking logic preventing accidental train diversion into sanctioned block sections.',
-    details: [
-      'Electronic Interlocking (EI) software interface synchronizes directly with RAKSHA-BLOCK.',
-      'Axle counters maintain red aspect protection until safety return memo is filed.',
-      'Line clear token generation locked until Site Engineer submits track restoration form.',
-    ],
-    mandatoryAction: 'SIL-4 interlocking validation logged in immutable audit records.',
-  },
-];
-
 export const LoginPortal: React.FC<LoginPortalProps> = ({
   onLoginSuccess,
   onSelectRole,
@@ -136,9 +55,6 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
   // Department Login Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedModalRole, setSelectedModalRole] = useState<UserRole>('ENG_OFFICER');
-
-  // Selected Safety Circular Modal State
-  const [activeCircular, setActiveCircular] = useState<SafetyCircular | null>(null);
 
   const handleOpenLoginModal = (role: UserRole) => {
     setSelectedModalRole(role);
@@ -470,64 +386,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
         </div>
       </section>
 
-      {/* 4. Railway Safety Circulars & Regulatory Bulletins (IRCTC / FOIS Aesthetic) */}
-      <section id="railway-safety-circulars-section" className="max-w-[1800px] w-full mx-auto px-3 sm:px-6 lg:px-8 mt-8 sm:mt-10">
-        <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
-          {/* Section Header */}
-          <div className="bg-[#000075] text-white px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b-2 border-amber-500">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500 text-blue-950 flex items-center justify-center font-black">
-                <FileText className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-white tracking-wide">
-                  रेलवे सुरक्षा परिपत्र एवं संचालन नियम | Railway Safety Circulars & Directives
-                </h3>
-                <p className="text-xs text-blue-200">
-                  Published by Railway Board & CRS (Commissioner of Railway Safety)
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Circulars List Grid */}
-          <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {SAFETY_CIRCULARS.map((circ) => (
-              <div
-                key={circ.id}
-                id={`circular-card-${circ.id}`}
-                onClick={() => setActiveCircular(circ)}
-                className="p-4 rounded-lg bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 transition-all cursor-pointer flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-center justify-end text-xs mb-1.5">
-                    <span className="text-slate-500 text-[11px] font-medium">{circ.date}</span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#000075] transition-colors leading-snug">
-                    {circ.title}
-                  </h4>
-
-                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed line-clamp-2">
-                    {circ.summary}
-                  </p>
-                </div>
-
-                <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-xs">
-                  <span className="text-[11px] text-slate-500 font-medium">{circ.department}</span>
-                  <span className="text-[#000075] font-bold flex items-center space-x-1 group-hover:underline">
-                    <span>Read Mandate</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Official Indian Railways Helpline & Emergency Support Directory */}
+      {/* Official Indian Railways Helpline & Emergency Support Directory */}
       <section id="railway-helpline-directory" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-slate-100 rounded-xl border border-slate-300 p-5 text-xs text-slate-700">
           <div className="flex items-center space-x-2 text-[#000075] font-bold text-sm mb-3">
@@ -578,68 +437,6 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
         }}
       />
 
-      {/* Safety Circular Full View Modal */}
-      {activeCircular && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150"
-          onClick={() => setActiveCircular(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-[#000075] text-white p-5 border-b-4 border-amber-500 flex items-start justify-between">
-              <div>
-                <h3 className="text-base font-bold text-white">{activeCircular.title}</h3>
-                <p className="text-xs text-blue-200 mt-0.5">{activeCircular.department} • {activeCircular.date}</p>
-              </div>
-              <button
-                onClick={() => setActiveCircular(null)}
-                className="p-1 rounded text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4 text-xs text-slate-700 max-h-[70vh] overflow-y-auto">
-              <div>
-                <div className="font-bold text-slate-900 mb-1">Executive Summary:</div>
-                <p className="leading-relaxed bg-slate-50 p-3 rounded border border-slate-200">
-                  {activeCircular.summary}
-                </p>
-              </div>
-
-              <div>
-                <div className="font-bold text-slate-900 mb-1.5">Mandatory Operational Instructions:</div>
-                <ul className="space-y-1.5">
-                  {activeCircular.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-start space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-700 mt-1.5 flex-shrink-0" />
-                      <span>{detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-amber-900">
-                <span className="font-bold block mb-0.5">Enforcement Policy:</span>
-                <span>{activeCircular.mandatoryAction}</span>
-              </div>
-            </div>
-
-            <div className="p-4 bg-slate-50 border-t border-slate-200 text-right">
-              <button
-                onClick={() => setActiveCircular(null)}
-                className="px-4 py-2 bg-[#000075] text-white rounded-lg text-xs font-bold hover:bg-blue-900 transition-colors cursor-pointer"
-              >
-                Dismiss & Return to Portal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
