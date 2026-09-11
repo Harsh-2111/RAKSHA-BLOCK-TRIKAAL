@@ -4,6 +4,7 @@ import { LoginPortal } from './components/LoginPortal';
 import { DepartmentDashboard } from './components/DepartmentDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LiveAnalyticsMapDashboard } from './components/LiveAnalyticsMapDashboard';
+import { GanttChart } from './components/GanttChart';
 import { NewRequestModal } from './components/NewRequestModal';
 import { RequestDetailModal } from './components/RequestDetailModal';
 import { AdminActionModal } from './components/AdminActionModal';
@@ -670,6 +671,14 @@ export default function App() {
         </main>
       ) : (
         <main className="flex-1 w-full max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 py-4 sm:py-6">
+          {activeNavTab === 'DEMAND' && (
+            <GanttChart
+              currentUser={currentUser}
+              allRequests={allRequests}
+              activeZone={activeZone}
+              onViewRequestDetail={(req) => setActiveDetailRequest(req)}
+            />
+          )}
           {activeNavTab === 'MAP_ANALYTICS' ? (
             /* Live Analytics & Satellite Geographic Map: Rendered strictly INSIDE dashboard for logged-in officers */
             <LiveAnalyticsMapDashboard
