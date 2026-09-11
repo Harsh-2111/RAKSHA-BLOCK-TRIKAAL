@@ -631,7 +631,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              All Departments ({allRequests.length})
+              All Departments
             </button>
             <button
               onClick={() => setSelectedDeptTab('ENGINEERING')}
@@ -641,7 +641,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              Engineering / P-Way ({allRequests.filter((r) => r.department === 'ENGINEERING').length})
+              Engineering / P-Way
             </button>
             <button
               onClick={() => setSelectedDeptTab('ST')}
@@ -651,7 +651,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              S&T / Signalling ({allRequests.filter((r) => r.department === 'ST').length})
+              S&T / Signalling
             </button>
             <button
               onClick={() => setSelectedDeptTab('TRD')}
@@ -661,7 +661,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              TRD / 25kV OHE ({allRequests.filter((r) => r.department === 'TRD').length})
+              TRD / 25kV OHE
             </button>
           </div>
 
