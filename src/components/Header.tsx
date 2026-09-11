@@ -21,8 +21,8 @@ interface HeaderProps {
   onLogout: () => void;
   onOpenQuickSwitch?: () => void;
   onResetData?: () => void;
-  activeNavTab?: 'DEMAND' | 'MAP_ANALYTICS';
-  onSelectNavTab?: (tab: 'DEMAND' | 'MAP_ANALYTICS') => void;
+  activeNavTab?: 'DEMAND' | 'MAP_ANALYTICS' | 'GANTT';
+  onSelectNavTab?: (tab: 'DEMAND' | 'MAP_ANALYTICS' | 'GANTT') => void;
   supabaseState?: SupabaseSyncState;
   onOpenDbStatusModal?: () => void;
   unreadNotificationCount?: number;
@@ -303,6 +303,19 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
+              </button>
+
+              <button
+                id="nav-tab-gantt-chart"
+                onClick={() => onSelectNavTab('GANTT')}
+                className={`flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer shrink-0 ${
+                  activeNavTab === 'GANTT'
+                    ? 'border-amber-400 text-amber-300 bg-blue-950/80 shadow-xs'
+                    : 'border-transparent text-blue-200 hover:text-white hover:bg-blue-900/50'
+                }`}
+              >
+                <Layers className="w-4 h-4 text-amber-300" />
+                <span>Gantt Chart</span>
               </button>
             </div>
 

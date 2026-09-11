@@ -79,7 +79,7 @@ const DEFAULT_NOTIFICATIONS: AppNotification[] = [
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => getStoredUser());
   const [allRequests, setAllRequests] = useState<BlockRequest[]>(() => getStoredRequests());
-  const [activeNavTab, setActiveNavTab] = useState<'DEMAND' | 'MAP_ANALYTICS'>('DEMAND');
+  const [activeNavTab, setActiveNavTab] = useState<'DEMAND' | 'MAP_ANALYTICS' | 'GANTT'>('DEMAND');
   const [activeZone, setActiveZone] = useState<RailwayZoneCode>(() => {
     const user = getStoredUser();
     return user?.zoneCode || 'ALL';
@@ -671,14 +671,6 @@ export default function App() {
         </main>
       ) : (
         <main className="flex-1 w-full max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 py-4 sm:py-6">
-          {activeNavTab === 'DEMAND' && (
-            <GanttChart
-              currentUser={currentUser}
-              allRequests={allRequests}
-              activeZone={activeZone}
-              onViewRequestDetail={(req) => setActiveDetailRequest(req)}
-            />
-          )}
           {activeNavTab === 'MAP_ANALYTICS' ? (
             /* Live Analytics & Satellite Geographic Map: Rendered strictly INSIDE dashboard for logged-in officers */
             <LiveAnalyticsMapDashboard
@@ -689,6 +681,13 @@ export default function App() {
               onApplyAiSchedule={handleApplyAiSchedule}
               activeZone={activeZone}
               onSelectZone={setActiveZone}
+            />
+          ) : activeNavTab === 'GANTT' ? (
+            <GanttChart
+              currentUser={currentUser}
+              allRequests={allRequests}
+              activeZone={activeZone}
+              onViewRequestDetail={(req) => setActiveDetailRequest(req)}
             />
           ) : currentUser.role === 'SECTION_CONTROLLER' ? (
             /* Main Control Administrator View: Cross-Department visibility + Exclusive Power */
