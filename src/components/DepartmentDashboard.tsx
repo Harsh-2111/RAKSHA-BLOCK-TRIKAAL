@@ -265,7 +265,7 @@ export const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({
           {/* Action Button to Switch to Submit Form */}
           <button
             id="btn-toggle-new-request"
-            onClick={() => setActiveTab(activeTab === 'FORM' ? 'TABLE' : 'FORM')}
+            onClick={() => setActiveTab('FORM')}
             className={`flex items-center space-x-2 px-4 py-2.5 rounded-md text-xs font-bold transition-all shadow-sm focus:outline-none focus:ring-2 cursor-pointer ${
               activeTab === 'FORM'
                 ? 'bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200'
