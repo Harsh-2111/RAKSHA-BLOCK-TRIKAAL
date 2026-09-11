@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   FileText,
   AlertTriangle,
-  TrainTrack,
   Clock,
   UserCheck,
   Database,
@@ -347,70 +346,6 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
               </p>
             </div>
 
-            {/* Indian Railways Corridor Schematic Line Graphic */}
-            <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-blue-800/80 max-w-4xl mx-auto">
-              <div className="flex items-center justify-between text-[11px] font-mono text-blue-200 mb-1 px-2">
-                <span className="flex items-center space-x-1 text-amber-300 font-bold">
-                  <TrainTrack className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span className="truncate">DLI-GZB-ALJN QUADRUPLE CORRIDOR (SECTION-01)</span>
-                </span>
-                <span className="hidden sm:inline text-slate-300">Total Route: 126.1 KM • 160 KMPH FIT</span>
-              </div>
-
-              {/* Station Node Progress Track Line Graphic */}
-              <div className="relative flex items-center justify-between bg-blue-950/70 border border-blue-800 rounded-lg p-2.5 sm:p-3 overflow-x-auto text-xs scrollbar-thin">
-                {/* Station 1 */}
-                <div className="flex flex-col items-center min-w-[70px] z-10">
-                  <span className="w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-emerald-950 shadow-sm mb-1" />
-                  <span className="font-bold text-white text-[11px]">NDLS</span>
-                  <span className="text-[9px] text-slate-400 font-mono">0.0 KM</span>
-                </div>
-
-                <div className="flex-1 h-0.5 bg-emerald-500/80 mx-1 min-w-[30px] relative">
-                  <span className="absolute -top-1 left-1/2 -translate-x-1/2 text-[8px] text-emerald-300 font-mono">UP LINE</span>
-                </div>
-
-                {/* Station 2 */}
-                <div className="flex flex-col items-center min-w-[70px] z-10">
-                  <span className="w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-emerald-950 shadow-sm mb-1" />
-                  <span className="font-bold text-white text-[11px]">ANVT</span>
-                  <span className="text-[9px] text-slate-400 font-mono">9.2 KM</span>
-                </div>
-
-                <div className="flex-1 h-0.5 bg-amber-500/80 mx-1 min-w-[30px] relative">
-                  <span className="absolute -top-1 left-1/2 -translate-x-1/2 text-[8px] text-amber-300 font-mono">25kV OHE</span>
-                </div>
-
-                {/* Station 3 */}
-                <div className="flex flex-col items-center min-w-[70px] z-10">
-                  <span className="w-3 h-3 rounded-full bg-amber-400 ring-4 ring-amber-950 shadow-sm mb-1 animate-pulse" />
-                  <span className="font-bold text-amber-300 text-[11px]">GZB JCN</span>
-                  <span className="text-[9px] text-slate-400 font-mono">25.6 KM</span>
-                </div>
-
-                <div className="flex-1 h-0.5 bg-emerald-500/80 mx-1 min-w-[30px] relative">
-                  <span className="absolute -top-1 left-1/2 -translate-x-1/2 text-[8px] text-emerald-300 font-mono">ABS OK</span>
-                </div>
-
-                {/* Station 4 */}
-                <div className="flex flex-col items-center min-w-[70px] z-10">
-                  <span className="w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-emerald-950 shadow-sm mb-1" />
-                  <span className="font-bold text-white text-[11px]">MTC</span>
-                  <span className="text-[9px] text-slate-400 font-mono">68.4 KM</span>
-                </div>
-
-                <div className="flex-1 h-0.5 bg-emerald-500/80 mx-1 min-w-[30px] relative">
-                  <span className="absolute -top-1 left-1/2 -translate-x-1/2 text-[8px] text-emerald-300 font-mono">DN LINE</span>
-                </div>
-
-                {/* Station 5 */}
-                <div className="flex flex-col items-center min-w-[70px] z-10">
-                  <span className="w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-emerald-950 shadow-sm mb-1" />
-                  <span className="font-bold text-white text-[11px]">ALJN JCN</span>
-                  <span className="text-[9px] text-slate-400 font-mono">126.1 KM</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
