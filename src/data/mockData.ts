@@ -861,7 +861,7 @@ export function getStoredRequests(): BlockRequest[] {
     if (hasNew) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     }
-    const normalized = parsed.map((request: BlockRequest) => ({
+    const normalized = parsed.filter((request: BlockRequest) => request.status !== 'COMPLETED').map((request: BlockRequest) => ({
       ...request,
       applicantName: normalizePersonName(request.applicantName) || request.applicantName,
       reviewedBy: normalizePersonName(request.reviewedBy),

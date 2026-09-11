@@ -458,7 +458,12 @@ export async function fetchBlockRequestsFromSupabase(activeZone?: string): Promi
     }
 
     if (data && data.length > 0) {
-      const parsed = data.map(dbToBlockRequest);
+      const allParsed = data.map(dbToBlockRequest);
+      const completedRequests = allParsed.filter((request) => request.status === 'COMPLETED');
+      if (completedRequests.length > 0) {
+        await Promise.all(completedRequests.map((request) => deleteBlockRequestInSupabase(request.id)));
+      }
+      const parsed = allParsed.filter((request) => request.status !== 'COMPLETED');
       const filtered = activeZone && activeZone !== 'ALL'
         ? parsed.filter((request) => request.zoneCode === activeZone || request.zone?.includes(activeZone) || request.division?.includes(activeZone))
         : parsed;
@@ -533,6 +538,27 @@ export async function updateBlockRequestInSupabase(
     return { success: true, data: data ? dbToBlockRequest(data) : request };
   } catch (err: any) {
     console.error('Exception in updateBlockRequestInSupabase:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+export async function deleteBlockRequestInSupabase(
+  requestId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase
+      .from('block_requests')
+      .delete()
+      .eq('request_data->>id', requestId);
+
+    if (error) {
+      console.warn('Supabase deleteBlockRequest warning:', error.message);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('Exception in deleteBlockRequestInSupabase:', err);
     return { success: false, error: err.message };
   }
 }
