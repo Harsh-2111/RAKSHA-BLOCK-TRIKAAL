@@ -273,7 +273,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Top Navigation Bar: Persistent across all post-login screens (Demand Management & Live Analytics & Line Map) */}
       {currentUser && onSelectNavTab && (
         <nav id="top-nav-tabs" aria-label="Main Navigation" className="bg-[#00005a] border-t border-blue-900/90 px-3 sm:px-6">
-          <div className="max-w-[1800px] w-full mx-auto flex items-center justify-between overflow-x-auto whitespace-nowrap">
+          <div className="max-w-[1800px] w-full mx-auto flex items-center justify-between gap-2 overflow-x-auto whitespace-nowrap">
             <div className="flex items-center space-x-1 sm:space-x-2 py-0.5">
               <button
                 id="nav-tab-demand-management"

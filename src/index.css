@@ -1,6 +1,36 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
 /* IRCTC Slow-scrolling Marquee Ticker */
 @keyframes irctcMarquee {
   0% {
@@ -79,6 +109,18 @@
 
 .leaflet-popup-pane {
   z-index: 25 !important;
+}
+
+@media (max-width: 640px) {
+  .mobile-safe-padding {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .overflow-x-auto {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @media print {
