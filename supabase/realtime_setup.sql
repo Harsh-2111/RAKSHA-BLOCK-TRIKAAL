@@ -5,6 +5,7 @@
 -- before production deployment.
 
 alter table if exists public.block_requests replica identity full;
+alter table public.block_requests add column if not exists request_data jsonb;
 
 -- Realtime only emits changes for tables in this publication.
 do $$

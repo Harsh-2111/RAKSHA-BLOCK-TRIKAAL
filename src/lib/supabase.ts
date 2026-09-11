@@ -42,8 +42,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 export function dbToBlockRequest(row: any): BlockRequest {
   if (!row) return {} as BlockRequest;
 
-  const rawDivision = row.division ?? 'Delhi (DLI)';
-  const rawZone = row.zone ?? row.railway_zone;
+  const storedRequest = row.request_data && typeof row.request_data === 'object'
+    ? { ...row, ...row.request_data }
+    : row;
+  const normalizedDepartment = String(storedRequest.department || 'ENGINEERING').toUpperCase();
+  const normalizedStatus = String(storedRequest.status || 'PENDING').toUpperCase().replace(/ /g, '_');
+  const startTimestamp = storedRequest.start_time || storedRequest.startTime;
+  const endTimestamp = storedRequest.end_time || storedRequest.endTime;
+  const startTime = storedRequest.requested_start_time ?? storedRequest.requestedStartTime ?? (startTimestamp ? String(startTimestamp).slice(11, 16) : '01:00');
+  const endTime = storedRequest.requested_end_time ?? storedRequest.requestedEndTime ?? (endTimestamp ? String(endTimestamp).slice(11, 16) : '04:00');
+  const requestedDate = storedRequest.requested_date ?? storedRequest.requestedDate ?? (startTimestamp ? String(startTimestamp).slice(0, 10) : new Date().toISOString().split('T')[0]);
+
+  const rawDivision = storedRequest.division ?? 'Delhi (DLI)';
+  const rawZone = storedRequest.zone ?? storedRequest.railway_zone;
   const resolvedZone = rawZone ?? (
     rawDivision.includes('MMCT') || rawDivision.includes('Mumbai') ? 'Western Railway (WR)' :
     rawDivision.includes('PA') || rawDivision.includes('Pune') ? 'Central Railway (CR)' :
@@ -61,108 +72,76 @@ export function dbToBlockRequest(row: any): BlockRequest {
   );
 
   return {
-    id: row.id || row.block_id || `RB-REQ-${Date.now()}`,
-    department: (row.department || 'ENGINEERING') as Department,
-    applicantName: row.applicant_name ?? row.applicantName ?? 'Railway Official',
-    applicantDesignation: row.applicant_designation ?? row.applicantDesignation ?? 'Sr. Section Engineer',
+    id: storedRequest.request_id ?? storedRequest.id ?? storedRequest.block_id ?? `RB-REQ-${Date.now()}`,
+    department: (normalizedDepartment === 'S&T' ? 'ST' : normalizedDepartment) as Department,
+    applicantName: storedRequest.applicant_name ?? storedRequest.applicantName ?? 'Railway Official',
+    applicantDesignation: storedRequest.applicant_designation ?? storedRequest.applicantDesignation ?? 'Sr. Section Engineer',
     zone: resolvedZone,
     zoneCode: resolvedZoneCode,
     division: rawDivision,
-    section: row.section ?? 'Corridor Section',
-    stationFrom: row.station_from ?? row.stationFrom ?? 'Station A',
-    stationTo: row.station_to ?? row.stationTo ?? 'Station B',
-    lineType: row.line_type ?? row.lineType ?? 'UP Main Line',
-    startKm: row.start_km ?? row.startKm ?? 'KM 0/0',
-    endKm: row.end_km ?? row.endKm ?? 'KM 2/0',
-    workCategory: row.work_category ?? row.workCategory ?? 'Track Maintenance',
-    blockType: row.block_type ?? row.blockType ?? row.work_category ?? 'Track Maintenance',
-    workDescription: row.work_description ?? row.workDescription ?? 'Routine Maintenance',
-    justification: row.justification ?? '',
-    machineryDeployed: Array.isArray(row.machinery_deployed)
-      ? row.machinery_deployed
-      : Array.isArray(row.machineryDeployed)
-      ? row.machineryDeployed
-      : typeof row.machinery_deployed === 'string'
-      ? row.machinery_deployed.split(',').map((s: string) => s.trim())
+    section: storedRequest.section ?? storedRequest.section_name ?? 'Corridor Section',
+    stationFrom: storedRequest.station_from ?? storedRequest.stationFrom ?? 'Station A',
+    stationTo: storedRequest.station_to ?? storedRequest.stationTo ?? 'Station B',
+    lineType: storedRequest.line_type ?? storedRequest.lineType ?? 'UP Main Line',
+    startKm: storedRequest.start_km ?? storedRequest.startKm ?? 'KM 0/0',
+    endKm: storedRequest.end_km ?? storedRequest.endKm ?? 'KM 2/0',
+    workCategory: storedRequest.work_category ?? storedRequest.workCategory ?? storedRequest.block_type ?? 'Track Maintenance',
+    blockType: storedRequest.block_type ?? storedRequest.blockType ?? storedRequest.work_category ?? 'Track Maintenance',
+    workDescription: storedRequest.work_description ?? storedRequest.workDescription ?? storedRequest.justification ?? 'Routine Maintenance',
+    justification: storedRequest.justification ?? '',
+    machineryDeployed: Array.isArray(storedRequest.machinery_deployed)
+      ? storedRequest.machinery_deployed
+      : Array.isArray(storedRequest.machineryDeployed)
+      ? storedRequest.machineryDeployed
+      : typeof (storedRequest.machinery_deployed ?? storedRequest.machinery) === 'string'
+      ? (storedRequest.machinery_deployed ?? storedRequest.machinery).split(',').map((s: string) => s.trim())
       : ['Standard Maintenance Team'],
-    machineryText: row.machinery_text ?? row.machineryText ?? '',
-    requestedDate: row.requested_date ?? row.requestedDate ?? new Date().toISOString().split('T')[0],
-    requestedStartTime: row.requested_start_time ?? row.requestedStartTime ?? '01:00',
-    requestedEndTime: row.requested_end_time ?? row.requestedEndTime ?? '04:00',
-    durationMinutes: Number(row.duration_minutes ?? row.durationMinutes ?? 180),
-    durationFormatted: row.duration_formatted ?? row.durationFormatted ?? '3 hrs 00 mins',
-    powerBlockRequired: Boolean(row.power_block_required ?? row.powerBlockRequired ?? false),
-    trafficBlockRequired: Boolean(row.traffic_block_required ?? row.trafficBlockRequired ?? true),
-    disconnectionMemoRequired: Boolean(row.disconnection_memo_required ?? row.disconnectionMemoRequired ?? false),
-    shadowBlockEligible: Boolean(row.shadow_block_eligible ?? row.shadowBlockEligible ?? false),
-    speedRestrictionKmH: row.speed_restriction_kmh ?? row.speedRestrictionKmH ?? null,
-    priority: row.priority ?? 'ROUTINE_PLANNED',
-    urgencyLevel: row.urgency_level ?? row.urgencyLevel ?? 'Routine',
-    status: row.status ?? 'PENDING',
-    submittedAt: row.submitted_at ?? row.submittedAt ?? new Date().toISOString(),
-    reviewedAt: row.reviewed_at ?? row.reviewedAt ?? undefined,
-    reviewedBy: row.reviewed_by ?? row.reviewedBy ?? undefined,
-    approvedStartTime: row.approved_start_time ?? row.approvedStartTime ?? undefined,
-    approvedEndTime: row.approved_end_time ?? row.approvedEndTime ?? undefined,
-    approvedDurationMinutes: row.approved_duration_minutes ?? row.approvedDurationMinutes ?? undefined,
-    cautionOrderDetails: row.caution_order_details ?? row.cautionOrderDetails ?? undefined,
-    controllerRemarks: row.controller_remarks ?? row.controllerRemarks ?? undefined,
-    integratedWithBlockId: row.integrated_with_block_id ?? row.integratedWithBlockId ?? undefined,
-    safetyChecklistAcknowledged: Boolean(row.safety_checklist_acknowledged ?? row.safetyChecklistAcknowledged ?? true),
-    aiOptimized: Boolean(row.ai_optimized ?? row.aiOptimized ?? false),
-    aiBundleId: row.ai_bundle_id ?? row.aiBundleId ?? undefined,
-    aiOptimizationNotes: row.ai_optimization_notes ?? row.aiOptimizationNotes ?? undefined,
+    machineryText: storedRequest.machinery_text ?? storedRequest.machineryText ?? storedRequest.machinery ?? '',
+    requestedDate,
+    requestedStartTime: startTime,
+    requestedEndTime: endTime,
+    durationMinutes: Number(storedRequest.duration_minutes ?? storedRequest.durationMinutes ?? Number(storedRequest.duration_hours || 3) * 60),
+    durationFormatted: storedRequest.duration_formatted ?? storedRequest.durationFormatted ?? '3 hrs 00 mins',
+    powerBlockRequired: Boolean(storedRequest.power_block_required ?? storedRequest.powerBlockRequired ?? false),
+    trafficBlockRequired: Boolean(storedRequest.traffic_block_required ?? storedRequest.trafficBlockRequired ?? true),
+    disconnectionMemoRequired: Boolean(storedRequest.disconnection_memo_required ?? storedRequest.disconnectionMemoRequired ?? false),
+    shadowBlockEligible: Boolean(storedRequest.shadow_block_eligible ?? storedRequest.shadowBlockEligible ?? false),
+    speedRestrictionKmH: storedRequest.speed_restriction_kmh ?? storedRequest.speedRestrictionKmH ?? null,
+    priority: storedRequest.priority ?? 'ROUTINE_PLANNED',
+    urgencyLevel: storedRequest.urgency_level ?? storedRequest.urgency ?? storedRequest.urgencyLevel ?? 'Routine',
+    status: normalizedStatus as BlockRequest['status'],
+    submittedAt: storedRequest.submitted_at ?? storedRequest.submittedAt ?? storedRequest.created_at ?? new Date().toISOString(),
+    reviewedAt: storedRequest.reviewed_at ?? storedRequest.reviewedAt ?? undefined,
+    reviewedBy: storedRequest.reviewed_by ?? storedRequest.reviewedBy ?? undefined,
+    approvedStartTime: storedRequest.approved_start_time ?? storedRequest.approvedStartTime ?? undefined,
+    approvedEndTime: storedRequest.approved_end_time ?? storedRequest.approvedEndTime ?? undefined,
+    approvedDurationMinutes: storedRequest.approved_duration_minutes ?? storedRequest.approvedDurationMinutes ?? undefined,
+    cautionOrderDetails: storedRequest.caution_order_details ?? storedRequest.cautionOrderDetails ?? undefined,
+    controllerRemarks: storedRequest.controller_remarks ?? storedRequest.controllerRemarks ?? storedRequest.rejection_reason ?? undefined,
+    integratedWithBlockId: storedRequest.integrated_with_block_id ?? storedRequest.integratedWithBlockId ?? undefined,
+    safetyChecklistAcknowledged: Boolean(storedRequest.safety_checklist_acknowledged ?? storedRequest.safetyChecklistAcknowledged ?? true),
+    aiOptimized: Boolean(storedRequest.ai_optimized ?? storedRequest.aiOptimized ?? false),
+    aiBundleId: storedRequest.ai_bundle_id ?? storedRequest.aiBundleId ?? undefined,
+    aiOptimizationNotes: storedRequest.ai_optimization_notes ?? storedRequest.aiOptimizationNotes ?? undefined,
   };
 }
 
 export function blockRequestToDb(req: BlockRequest): Record<string, any> {
-  // Returns normalized payload covering both standard PostgreSQL snake_case and common camelCase columns
+  // The live Supabase table uses a compact legacy schema; request_data preserves the complete app record.
   return {
-    id: req.id,
+    request_id: req.id,
     department: req.department,
-    applicant_name: req.applicantName,
-    applicant_designation: req.applicantDesignation,
-    zone: req.zone || 'NR (Delhi Division)',
-    zone_code: req.zoneCode || 'NR',
-    division: req.division,
-    section: req.section,
-    station_from: req.stationFrom,
-    station_to: req.stationTo,
-    line_type: req.lineType,
-    start_km: req.startKm,
-    end_km: req.endKm,
-    work_category: req.workCategory,
-    block_type: req.blockType,
-    work_description: req.workDescription,
+    section_name: req.section,
+    block_type: req.blockType || req.workCategory,
+    start_time: `${req.requestedDate}T${req.requestedStartTime}:00`,
+    end_time: `${req.requestedDate}T${req.requestedEndTime}:00`,
+    duration_hours: req.durationMinutes / 60,
+    urgency: req.urgencyLevel || 'Routine',
+    machinery: req.machineryDeployed.join(', '),
     justification: req.justification,
-    machinery_deployed: req.machineryDeployed,
-    machinery_text: req.machineryText,
-    requested_date: req.requestedDate,
-    requested_start_time: req.requestedStartTime,
-    requested_end_time: req.requestedEndTime,
-    duration_minutes: req.durationMinutes,
-    duration_formatted: req.durationFormatted,
-    power_block_required: req.powerBlockRequired,
-    traffic_block_required: req.trafficBlockRequired,
-    disconnection_memo_required: req.disconnectionMemoRequired,
-    shadow_block_eligible: req.shadowBlockEligible,
-    speed_restriction_kmh: req.speedRestrictionKmH,
-    priority: req.priority,
-    urgency_level: req.urgencyLevel,
     status: req.status,
-    submitted_at: req.submittedAt,
-    reviewed_at: req.reviewedAt,
-    reviewed_by: req.reviewedBy,
-    approved_start_time: req.approvedStartTime,
-    approved_end_time: req.approvedEndTime,
-    approved_duration_minutes: req.approvedDurationMinutes,
-    caution_order_details: req.cautionOrderDetails,
-    controller_remarks: req.controllerRemarks,
-    integrated_with_block_id: req.integratedWithBlockId,
-    safety_checklist_acknowledged: req.safetyChecklistAcknowledged,
-    ai_optimized: req.aiOptimized,
-    ai_bundle_id: req.aiBundleId,
-    ai_optimization_notes: req.aiOptimizationNotes,
+    created_at: req.submittedAt || new Date().toISOString(),
+    request_data: req,
   };
 }
 
@@ -473,7 +452,7 @@ export async function fetchBlockRequestsFromSupabase(activeZone?: string): Promi
       query = query.or(`zone.ilike.%${activeZone}%,division.ilike.%${activeZone}%,section.ilike.%${activeZone}%`);
     }
 
-    const { data, error } = await query.order('submitted_at', { ascending: false });
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.warn('Supabase block_requests select notice:', error.message);
@@ -541,7 +520,7 @@ export async function updateBlockRequestInSupabase(
     const { data, error } = await supabase
       .from('block_requests')
       .update(payload)
-      .eq('id', request.id)
+      .eq('request_id', request.id)
       .select()
       .maybeSingle();
 
