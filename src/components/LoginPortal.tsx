@@ -470,11 +470,8 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                       <div className="font-extrabold text-slate-900 text-sm">{item.user.name}</div>
                       <div className="text-slate-600 text-xs mt-0.5">{item.designationFull}</div>
                     </div>
-                    <div className="text-right">
-                      <span className="font-mono text-[11px] font-bold bg-white text-slate-800 px-2 py-0.5 rounded border border-slate-300 shadow-2xs">
-                        {item.serviceId}
-                      </span>
-                      <div className="text-[10px] text-slate-500 mt-1">Division: Delhi</div>
+                    <div className="text-right text-[10px] text-slate-500">
+                      {item.serviceId}
                     </div>
                   </div>
                 </div>
@@ -557,10 +554,6 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 text-xs text-amber-300">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping mr-1" />
-              <span>Live Circular Feed (2026 Batch)</span>
-            </div>
           </div>
 
           {/* Circulars List Grid */}
@@ -573,10 +566,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                 className="p-4 rounded-lg bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 transition-all cursor-pointer flex flex-col justify-between group"
               >
                 <div>
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                      {circ.circularNo}
-                    </span>
+                  <div className="flex items-center justify-end text-xs mb-1.5">
                     <span className="text-slate-500 text-[11px] font-medium">{circ.date}</span>
                   </div>
 
@@ -667,10 +657,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
           >
             <div className="bg-[#000075] text-white p-5 border-b-4 border-amber-500 flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-mono font-bold bg-amber-400 text-blue-950 px-2 py-0.5 rounded">
-                  {activeCircular.circularNo}
-                </span>
-                <h3 className="text-base font-bold text-white mt-1.5">{activeCircular.title}</h3>
+                <h3 className="text-base font-bold text-white">{activeCircular.title}</h3>
                 <p className="text-xs text-blue-200 mt-0.5">{activeCircular.department} • {activeCircular.date}</p>
               </div>
               <button
