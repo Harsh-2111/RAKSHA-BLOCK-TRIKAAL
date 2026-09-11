@@ -87,17 +87,23 @@ export function generateFieldRosterVectorPdf(
   pdf.setFillColor(234, 88, 12);
   pdf.rect(0, 22, pageWidth, 1.8, 'F');
 
+  // Use the same RAKSHA-BLOCK mark shown in the printable roster preview.
+  const logo = element?.querySelector('img[alt="RAKSHA-BLOCK Logo"]') as HTMLImageElement | null;
+  if (logo?.complete && logo.naturalWidth > 0) {
+    pdf.addImage(logo, 'PNG', margin, 3, 14, 14);
+  }
+
   // Government & Ministry Title
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(13);
-  pdf.text('INDIAN RAILWAYS • RAKSHA-BLOCK ENTERPRISE SYSTEM', margin, 10);
+  pdf.text('INDIAN RAILWAYS • RAKSHA-BLOCK ENTERPRISE SYSTEM', margin + 18, 10);
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.text(
     'Ministry of Railways • Automated Corridor Block Planning & Field Execution Management',
-    margin,
+    margin + 18,
     16
   );
 

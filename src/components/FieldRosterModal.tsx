@@ -117,7 +117,7 @@ export const FieldRosterModal: React.FC<FieldRosterModalProps> = ({
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/70 p-2 sm:p-4 md:p-6 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
       {/* Modal Container */}
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden my-auto">
+      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-6xl max-h-[92vh] min-w-0 flex flex-col overflow-hidden my-auto">
         {/* Top Operational Action Bar (Non-Printable) */}
         <div className="bg-slate-900 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 no-print">
           <div className="flex items-center space-x-2.5">
@@ -246,27 +246,27 @@ export const FieldRosterModal: React.FC<FieldRosterModalProps> = ({
         </div>
 
         {/* PRINTABLE DOCUMENT BODY */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50">
+        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-8 bg-slate-50">
           {/* Authentic Document Canvas Container */}
           <div
             id="printable-roster-document"
-            className="bg-white mx-auto max-w-[1020px] p-6 sm:p-10 rounded-sm border border-slate-300 shadow-md print:shadow-none print:border-none print:p-0 print:m-0"
+            className="bg-white mx-auto w-full min-w-0 max-w-[1020px] p-3 sm:p-10 rounded-sm border border-slate-300 shadow-md print:shadow-none print:border-none print:p-0 print:m-0"
           >
             {/* DOCUMENT HEADER: Authentic Indian Railways Letterhead */}
             <div className="border-b-2 border-slate-900 pb-4">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 {/* Left: Indian Railways Crest & Official Logo */}
-                <div className="flex items-center space-x-4">
+                <div className="flex min-w-0 items-center space-x-3 sm:space-x-4">
                   <img
                     src="/logo.png"
                     alt="RAKSHA-BLOCK Logo"
-                    className="h-16 w-auto object-contain shrink-0"
+                    className="h-12 sm:h-16 w-auto max-w-[84px] object-contain shrink-0"
                   />
                   <div>
                     <div className="text-[11px] font-bold tracking-widest text-slate-600 uppercase">
                       Government of India • Ministry of Railways
                     </div>
-                    <h1 className="text-lg sm:text-xl font-black text-[#000075] tracking-tight uppercase">
+                    <h1 className="text-base sm:text-xl font-black text-[#000075] tracking-tight uppercase break-words">
                       Indian Railways - Divisional Main Control
                     </h1>
                     <div className="text-xs font-semibold text-slate-700">
@@ -276,7 +276,7 @@ export const FieldRosterModal: React.FC<FieldRosterModalProps> = ({
                 </div>
 
                 {/* Right: Reference & Form Tag */}
-                <div className="text-right shrink-0">
+                <div className="text-left sm:text-right shrink-0">
                   <div className="inline-block border border-slate-800 px-2.5 py-1 bg-slate-50 text-[11px] font-mono font-bold text-slate-900">
                     FORM T/402-B (REV. 2026)
                   </div>
@@ -288,7 +288,7 @@ export const FieldRosterModal: React.FC<FieldRosterModalProps> = ({
               </div>
 
               {/* Title Ribbon */}
-              <div className="mt-4 bg-[#000075] text-white py-1.5 px-4 text-center font-bold tracking-wider text-xs sm:text-sm uppercase rounded-xs">
+              <div className="mt-4 bg-[#000075] text-white py-1.5 px-2 sm:px-4 text-center font-bold tracking-wider text-[10px] sm:text-sm uppercase rounded-xs break-words">
                 Daily Master Corridor Maintenance & Field Execution Roster
               </div>
             </div>
