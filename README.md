@@ -1,37 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# RAKSHA-BLOCK
 
-# Run and deploy your AI Studio app
+RAKSHA-BLOCK is an Indian Railways automatic block planning and corridor maintenance management system. It allows Engineering, S&T, and TRD departments to submit block requests and enables Section Controllers to review, approve, modify, reject, and publish coordinated maintenance schedules.
 
-This contains everything you need to run your app locally.
+## How It Works
 
-View your app in AI Studio: https://ai.studio/apps/9f781357-7f65-42b3-a32c-8318d809d142
+- Department officers submit maintenance block requests.
+- Requests are synchronized with Supabase PostgreSQL.
+- Section Controllers review requests across departments.
+- Google OR-Tools CP-SAT creates coordinated maintenance bundles.
+- Approved schedules, safety clearances, notifications, and audit records synchronize automatically.
+- The interface supports desktop and mobile screens.
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-
-## CP-SAT optimizer
-
-The optimizer uses Google OR-Tools CP-SAT through a local Python service. Install the solver dependency once:
-
 ```bash
+npm install
 pip install -r requirements.txt
 ```
 
-Run both processes in separate terminals:
+Start the CP-SAT service and frontend in separate terminals:
 
 ```bash
 npm run cp-sat
 npm run dev
 ```
 
-The Vite development server proxies `/api/cp-sat/solve` to the solver at `http://127.0.0.1:8000`.
+Local app: http://localhost:3000/
+
+## Live App
+
+https://raksha-block-trikaal.vercel.app/
