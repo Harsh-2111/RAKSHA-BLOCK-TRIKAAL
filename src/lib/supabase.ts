@@ -73,7 +73,7 @@ export function dbToBlockRequest(row: any): BlockRequest {
 
   return {
     id: storedRequest.request_id ?? storedRequest.id ?? storedRequest.block_id ?? `RB-REQ-${Date.now()}`,
-    department: (normalizedDepartment === 'S&T' ? 'ST' : normalizedDepartment) as Department,
+    department: (normalizedDepartment === 'S&T' || normalizedDepartment === 'S & T' ? 'ST' : normalizedDepartment) as Department,
     applicantName: storedRequest.applicant_name ?? storedRequest.applicantName ?? 'Railway Official',
     applicantDesignation: storedRequest.applicant_designation ?? storedRequest.applicantDesignation ?? 'Sr. Section Engineer',
     zone: resolvedZone,
@@ -127,20 +127,17 @@ export function dbToBlockRequest(row: any): BlockRequest {
 }
 
 export function blockRequestToDb(req: BlockRequest): Record<string, any> {
-  // The live Supabase table uses a compact legacy schema.
   return {
-    request_id: req.id,
-    department: req.department,
-    section_name: req.section,
-    block_type: req.blockType || req.workCategory,
-    start_time: `${req.requestedDate}T${req.requestedStartTime}:00`,
-    end_time: `${req.requestedDate}T${req.requestedEndTime}:00`,
+    department: req.department === 'ENGINEERING' ? 'Engineering' : req.department === 'ST' ? 'S & T' : 'TRD',
+    route_section: req.section,
+    work_type: req.blockType || req.workCategory,
+    requested_time: `${req.requestedDate}T${req.requestedStartTime}:00`,
     duration_hours: req.durationMinutes / 60,
     urgency: req.urgencyLevel || 'Routine',
-    machinery: req.machineryDeployed.join(', '),
-    justification: req.justification,
-    status: req.status,
-    created_at: req.submittedAt || new Date().toISOString(),
+    affected_trains: req.machineryDeployed.join(', '),
+    remarks: req.justification || req.workDescription,
+    status: req.status === 'APPROVED' || req.status === 'MODIFIED_APPROVED' || req.status === 'COMPLETED' ? 'Approved' : req.status === 'REJECTED' ? 'Rejected' : 'Pending',
+    request_data: req,
   };
 }
 
@@ -308,7 +305,7 @@ export async function verifyCredentialsAgainstSupabase(
     let { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('user_id', trimmedId);
+      .eq('username', trimmedId.toLowerCase());
 
     // 2. If no direct record is returned, check judge alias mapping (e.g. ENG_OFFICER -> eng)
     if (!data || data.length === 0) {
@@ -328,7 +325,7 @@ export async function verifyCredentialsAgainstSupabase(
         const aliasRes = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_id', alias);
+          .eq('username', alias);
         if (aliasRes.data && aliasRes.data.length > 0) {
           data = aliasRes.data;
         }
@@ -354,17 +351,19 @@ export async function verifyCredentialsAgainstSupabase(
     // 3. Password Verification:
     // Check against official demo credentials for judges & evaluators
     const expectedPasswordMap: Record<string, string> = {
-      eng: 'ENG@1234',
-      st: 'ST@1234',
-      trd: 'TRD@1234',
-      admin: 'ADMIN@1234',
+      eng: 'eng@1234',
+      st: 'st@1234',
+      trd: 'trd@1234',
+      admin: 'admin@1234',
     };
 
-    const expectedPass = expectedPasswordMap[profile.user_id.toLowerCase()];
+    const expectedPass = expectedPasswordMap[profile.username.toLowerCase()];
     let isValidPassword = false;
 
     if (expectedPass && trimmedPass === expectedPass) {
       isValidPassword = true;
+    } else if (profile.password) {
+      isValidPassword = trimmedPass === profile.password;
     } else if (profile.password_hash) {
       try {
         isValidPassword = bcrypt.compareSync(trimmedPass, profile.password_hash);
@@ -382,7 +381,7 @@ export async function verifyCredentialsAgainstSupabase(
 
     // 4. Resolve authenticated role
     let resolvedRole: UserRole = 'ENG_OFFICER';
-    const rawKey = (profile.role_key || profile.user_id || '').toLowerCase();
+    const rawKey = (profile.role || profile.username || '').toLowerCase();
     if (rawKey.includes('eng')) {
       resolvedRole = 'ENG_OFFICER';
     } else if (rawKey.includes('st') || rawKey.includes('s&t')) {
@@ -446,10 +445,7 @@ export async function fetchBlockRequestsFromSupabase(activeZone?: string): Promi
   error?: string;
 }> {
   try {
-    let query = supabase.from('block_requests').select('*');
-    if (activeZone && activeZone !== 'ALL') {
-      query = query.or(`zone.ilike.%${activeZone}%,division.ilike.%${activeZone}%,section.ilike.%${activeZone}%`);
-    }
+    const query = supabase.from('block_requests').select('*');
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
@@ -460,7 +456,10 @@ export async function fetchBlockRequestsFromSupabase(activeZone?: string): Promi
 
     if (data && data.length > 0) {
       const parsed = data.map(dbToBlockRequest);
-      return { requests: parsed, fromSupabase: true };
+      const filtered = activeZone && activeZone !== 'ALL'
+        ? parsed.filter((request) => request.zoneCode === activeZone || request.zone?.includes(activeZone) || request.division?.includes(activeZone))
+        : parsed;
+      return { requests: filtered, fromSupabase: true };
     }
 
     // Table is empty: seed initial baseline requests
@@ -519,7 +518,7 @@ export async function updateBlockRequestInSupabase(
     const { data, error } = await supabase
       .from('block_requests')
       .update(payload)
-      .eq('request_id', request.id)
+      .eq('request_data->>id', request.id)
       .select()
       .maybeSingle();
 
@@ -573,8 +572,14 @@ export async function insertAiScheduleLogToSupabase(
     };
 
     const { data, error } = await supabase
-      .from('ai_schedules')
-      .insert(payload)
+      .from('ai_schedule')
+      .insert({
+        block_request_id: null,
+        scheduled_start: scheduleLog.created_at || new Date().toISOString(),
+        scheduled_end: scheduleLog.created_at || new Date().toISOString(),
+        optimized_score: scheduleLog.total_hours_saved,
+        ai_remarks: JSON.stringify(payload),
+      })
       .select()
       .maybeSingle();
 
@@ -596,7 +601,7 @@ export async function fetchAiScheduleLogsFromSupabase(): Promise<{
 }> {
   try {
     const { data, error } = await supabase
-      .from('ai_schedules')
+      .from('ai_schedule')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(15);
@@ -605,16 +610,17 @@ export async function fetchAiScheduleLogsFromSupabase(): Promise<{
       return { logs: [], error: error.message };
     }
 
-    const mapped: AiScheduleRecord[] = (data || []).map((row: any) => ({
+    const mapped: AiScheduleRecord[] = (data || []).map((row: any) => {
+      const metadata = JSON.parse(row.ai_remarks || '{}');
+      return {
       id: row.id,
-      schedule_name: row.schedule_name || 'CP-SAT Auto-Schedule',
-      total_hours_saved: Number(row.total_hours_saved || 0),
-      conflicts_resolved: Number(row.conflicts_resolved || 0),
-      bundled_blocks_json: typeof row.bundled_blocks_json === 'string'
-        ? JSON.parse(row.bundled_blocks_json || '[]')
-        : row.bundled_blocks_json || [],
+      schedule_name: metadata.schedule_name || 'CP-SAT Auto-Schedule',
+      total_hours_saved: Number(metadata.total_hours_saved || 0),
+      conflicts_resolved: Number(metadata.conflicts_resolved || 0),
+      bundled_blocks_json: metadata.bundled_blocks_json || [],
       created_at: row.created_at,
-    }));
+      };
+    });
 
     return { logs: mapped };
   } catch (err: any) {
@@ -668,18 +674,19 @@ export function setupRealtimeSync(callbacks: {
     }
   );
 
-  // Listen to ai_schedules table changes
+  // Listen to ai_schedule table changes
   channel.on(
     'postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'ai_schedules' },
+    { event: 'INSERT', schema: 'public', table: 'ai_schedule' },
     (payload) => {
       if (payload.new) {
+        const metadata = JSON.parse(payload.new.ai_remarks || '{}');
         const record: AiScheduleRecord = {
           id: payload.new.id,
-          schedule_name: payload.new.schedule_name,
-          total_hours_saved: Number(payload.new.total_hours_saved || 0),
-          conflicts_resolved: Number(payload.new.conflicts_resolved || 0),
-          bundled_blocks_json: payload.new.bundled_blocks_json,
+          schedule_name: metadata.schedule_name || 'CP-SAT Auto-Schedule',
+          total_hours_saved: Number(metadata.total_hours_saved || 0),
+          conflicts_resolved: Number(metadata.conflicts_resolved || 0),
+          bundled_blocks_json: metadata.bundled_blocks_json || [],
           created_at: payload.new.created_at,
         };
         callbacks.onAiScheduleChange(record);

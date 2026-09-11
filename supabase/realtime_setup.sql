@@ -1,77 +1,54 @@
 -- RAKSHA-BLOCK cross-device sync setup
--- Run once in Supabase Dashboard -> SQL Editor.
--- The current demo login uses the public anon client, so these policies match
--- the existing application model. Replace them with authenticated policies
--- before production deployment.
+-- Run after the three-table schema in Supabase Dashboard -> SQL Editor.
 
-alter table if exists public.block_requests replica identity full;
+alter table public.profiles replica identity full;
+alter table public.block_requests replica identity full;
+alter table public.ai_schedule replica identity full;
+
+-- Preserve the complete client request without adding another table.
 alter table public.block_requests add column if not exists request_data jsonb;
+
+grant select, insert, update, delete on table public.profiles to anon, authenticated;
+grant select, insert, update, delete on table public.block_requests to anon, authenticated;
+grant select, insert, update, delete on table public.ai_schedule to anon, authenticated;
+
+alter table public.profiles enable row level security;
+alter table public.block_requests enable row level security;
+alter table public.ai_schedule enable row level security;
+
+drop policy if exists "Allow public read access" on public.profiles;
+drop policy if exists "profiles_public_access" on public.profiles;
+create policy "profiles_public_access" on public.profiles
+for all to anon, authenticated using (true) with check (true);
+
+drop policy if exists "Allow public access block_requests" on public.block_requests;
+drop policy if exists "block_requests_public_access" on public.block_requests;
+create policy "block_requests_public_access" on public.block_requests
+for all to anon, authenticated using (true) with check (true);
+
+drop policy if exists "Allow public access ai_schedule" on public.ai_schedule;
+drop policy if exists "ai_schedule_public_access" on public.ai_schedule;
+create policy "ai_schedule_public_access" on public.ai_schedule
+for all to anon, authenticated using (true) with check (true);
 
 -- Realtime only emits changes for tables in this publication.
 do $$
 begin
-  alter publication supabase_realtime add table public.block_requests;
-exception
-  when duplicate_object then null;
+  alter publication supabase_realtime add table public.profiles;
+exception when duplicate_object then null;
 end
 $$;
 
--- The web app reads and writes through the anon key.
-grant select, insert, update, delete on table public.block_requests to anon, authenticated;
-
-alter table public.block_requests enable row level security;
-
-drop policy if exists "block_requests_public_select" on public.block_requests;
-create policy "block_requests_public_select"
-on public.block_requests
-for select
-to anon, authenticated
-using (true);
-
-drop policy if exists "block_requests_public_insert" on public.block_requests;
-create policy "block_requests_public_insert"
-on public.block_requests
-for insert
-to anon, authenticated
-with check (true);
-
-drop policy if exists "block_requests_public_update" on public.block_requests;
-create policy "block_requests_public_update"
-on public.block_requests
-for update
-to anon, authenticated
-using (true)
-with check (true);
-
-drop policy if exists "block_requests_public_delete" on public.block_requests;
-create policy "block_requests_public_delete"
-on public.block_requests
-for delete
-to anon, authenticated
-using (true);
-
--- Optional audit table used by the AI schedule screen.
--- Keep this section if ai_schedules exists in your project.
-alter table if exists public.ai_schedules replica identity full;
 do $$
 begin
-  alter publication supabase_realtime add table public.ai_schedules;
-exception
-  when duplicate_object then null;
+  alter publication supabase_realtime add table public.block_requests;
+exception when duplicate_object then null;
 end
 $$;
-grant select, insert on table public.ai_schedules to anon, authenticated;
 
-alter table if exists public.ai_schedules enable row level security;
-drop policy if exists "ai_schedules_public_select" on public.ai_schedules;
-create policy "ai_schedules_public_select"
-on public.ai_schedules
-for select
-to anon, authenticated
-using (true);
-drop policy if exists "ai_schedules_public_insert" on public.ai_schedules;
-create policy "ai_schedules_public_insert"
-on public.ai_schedules
-for insert
-to anon, authenticated
-with check (true);
+do $$
+begin
+  alter publication supabase_realtime add table public.ai_schedule;
+exception when duplicate_object then null;
+end
+$$;
