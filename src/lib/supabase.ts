@@ -381,15 +381,18 @@ export async function verifyCredentialsAgainstSupabase(
 
     // 4. Resolve authenticated role
     let resolvedRole: UserRole = 'ENG_OFFICER';
-    const rawKey = (profile.role || profile.username || '').toLowerCase();
-    if (rawKey.includes('eng')) {
-      resolvedRole = 'ENG_OFFICER';
-    } else if (rawKey.includes('st') || rawKey.includes('s&t')) {
-      resolvedRole = 'ST_OFFICER';
-    } else if (rawKey.includes('trd')) {
-      resolvedRole = 'TRD_OFFICER';
-    } else if (rawKey.includes('admin') || rawKey.includes('control')) {
+    const rawRole = String(profile.role || '').toLowerCase();
+    const rawDepartment = String(profile.department || '').toLowerCase();
+    const rawUsername = String(profile.username || '').toLowerCase();
+    const rawKey = `${rawRole} ${rawDepartment} ${rawUsername}`;
+    if (rawRole.includes('admin') || rawRole.includes('control') || rawDepartment.includes('admin') || rawUsername === 'admin') {
       resolvedRole = 'SECTION_CONTROLLER';
+    } else if (rawDepartment.includes('s & t') || rawDepartment.includes('s&t') || rawUsername === 'st' || rawRole.includes('st')) {
+      resolvedRole = 'ST_OFFICER';
+    } else if (rawDepartment.includes('trd') || rawUsername === 'trd' || rawRole.includes('trd')) {
+      resolvedRole = 'TRD_OFFICER';
+    } else if (rawKey.includes('eng') || rawDepartment.includes('engineering') || rawUsername === 'eng') {
+      resolvedRole = 'ENG_OFFICER';
     }
 
     // 5. If modal was opened for a specific role, verify department match
