@@ -19,11 +19,11 @@ export const ZoneSelector: React.FC<ZoneSelectorProps> = ({
   const currentZoneInfo = activeZone !== 'ALL' ? ZONAL_RAILWAYS[activeZone] : null;
 
   return (
-    <div className={`relative inline-flex items-center ${className}`}>
+    <div className={`relative inline-flex min-w-0 max-w-full items-center ${className}`}>
       <label htmlFor="railway-zone-select" className="sr-only">
         Select Zonal Railway Network
       </label>
-      <div className="relative flex items-center bg-[#00005a] hover:bg-[#00004a] border border-amber-400/50 hover:border-amber-400 rounded-md shadow-xs transition-colors group">
+      <div className="relative flex min-w-0 max-w-full flex-1 items-center bg-[#00005a] hover:bg-[#00004a] border border-amber-400/50 hover:border-amber-400 rounded-md shadow-xs transition-colors group">
         <div className="pl-2.5 pr-1.5 flex items-center pointer-events-none text-amber-300">
           {activeZone === 'ALL' ? (
             <Globe className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
@@ -36,7 +36,7 @@ export const ZoneSelector: React.FC<ZoneSelectorProps> = ({
           id="railway-zone-select"
           value={activeZone}
           onChange={(e) => onSelectZone(e.target.value as RailwayZoneCode)}
-          className={`appearance-none bg-transparent text-white font-semibold text-xs cursor-pointer py-1.5 pl-1 pr-7 focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-md ${
+          className={`appearance-none min-w-0 flex-1 bg-transparent text-white font-semibold text-xs cursor-pointer py-1.5 pl-1 pr-7 focus:outline-none focus:ring-1 focus:ring-amber-400 rounded-md ${
             compact ? 'max-w-[140px] truncate' : ''
           }`}
           title="Switch Active Zonal Railway Network"

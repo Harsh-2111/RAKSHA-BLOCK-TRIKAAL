@@ -144,9 +144,9 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Top Navigation Header with IRCTC / CRIS / FOIS Emblem Crest */}
-      <div className="max-w-[1800px] w-full mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+      <div className="max-w-[1800px] w-full mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
         {/* Logo & Emblem Brand Area */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0">
+        <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0 max-w-full">
           {/* Authentic Indian Railways Emblem Inspired Crest with Ashoka Wheel & Train Motif */}
           <div className="relative flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-white to-amber-50 flex items-center justify-center shadow-md border-2 border-amber-400 ring-2 ring-blue-900/40">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-blue-900 flex flex-col items-center justify-center bg-slate-50 text-center p-0.5">
@@ -180,10 +180,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right Action & Role Bar with Zone Selector */}
-        <div className="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
+        <div className="mobile-header-actions flex w-full sm:w-auto flex-wrap items-center justify-end gap-1.5 sm:gap-2.5 shrink-0">
           {/* Integrated Pan-India Zone Selector */}
           {onSelectZone && (
-            <div className="flex items-center">
+            <div className="flex min-w-0 max-w-full flex-1 sm:flex-none items-center">
               <ZoneSelector
                 activeZone={activeZone}
                 onSelectZone={onSelectZone}
