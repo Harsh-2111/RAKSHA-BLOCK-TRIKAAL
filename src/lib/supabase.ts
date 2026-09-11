@@ -127,7 +127,7 @@ export function dbToBlockRequest(row: any): BlockRequest {
 }
 
 export function blockRequestToDb(req: BlockRequest): Record<string, any> {
-  // The live Supabase table uses a compact legacy schema; request_data preserves the complete app record.
+  // The live Supabase table uses a compact legacy schema.
   return {
     request_id: req.id,
     department: req.department,
@@ -141,7 +141,6 @@ export function blockRequestToDb(req: BlockRequest): Record<string, any> {
     justification: req.justification,
     status: req.status,
     created_at: req.submittedAt || new Date().toISOString(),
-    request_data: req,
   };
 }
 
