@@ -53,6 +53,13 @@ export interface ConflictInfo {
   summary: string;
 }
 
+const normalizeDepartment = (department: string): Department => {
+  const normalized = department.toUpperCase().replace(/\s+/g, ' ').trim();
+  if (normalized === 'S&T' || normalized === 'S & T' || normalized === 'ST') return 'ST';
+  if (normalized === 'TRD') return 'TRD';
+  return 'ENGINEERING';
+};
+
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   currentUser,
   allRequests,
@@ -209,7 +216,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
 
       // 1. Department filter
-      const matchesDept = selectedDeptTab === 'ALL' || req.department === selectedDeptTab;
+      const matchesDept = selectedDeptTab === 'ALL' || normalizeDepartment(req.department) === selectedDeptTab;
 
       // 2. Status filter
       let matchesStatus = true;
@@ -774,7 +781,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </thead>
             <tbody className="divide-y divide-slate-200">
               {filteredRequests.length > 0 ? (
-                filteredRequests.map((req) => {
+                filteredRequests
+                  .filter((req) => selectedDeptTab === 'ALL' || normalizeDepartment(req.department) === selectedDeptTab)
+                  .map((req) => {
                   const conflict = conflictMap.get(req.id);
                   const isConflictOpen = activeConflictTooltipId === req.id;
 
