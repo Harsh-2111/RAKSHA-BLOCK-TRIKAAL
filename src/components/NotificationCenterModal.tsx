@@ -44,14 +44,17 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
   if (!isOpen) return null;
 
   // Filter notifications for current user's role/department
-  const filteredForUser = notifications.filter((item) => {
+  const filteredForUser = notifications.filter((item, index, list) => {
     if (!currentUser) return false;
-    if (item.targetRole === 'ALL' || !item.targetRole) return true;
-    if (item.targetRole === currentUser.role) return true;
-    if (currentUser.role !== 'SECTION_CONTROLLER' && item.department === currentUser.department) {
-      return true;
+    if (item.targetRole !== 'ALL' && item.targetRole && item.targetRole !== currentUser.role && currentUser.role !== 'SECTION_CONTROLLER') {
+      return false;
     }
-    return false;
+    const key = item.requestId
+      ? `${item.type}|${item.requestId}`
+      : `${item.type}|${item.title}|${item.message}`;
+    return list.findIndex((candidate) => (candidate.requestId
+      ? `${candidate.type}|${candidate.requestId}`
+      : `${candidate.type}|${candidate.title}|${candidate.message}`) === key) === index;
   });
 
   const displayedList = filteredForUser.filter((item) => {

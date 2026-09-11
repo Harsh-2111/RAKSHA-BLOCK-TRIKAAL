@@ -147,7 +147,17 @@ export default function App() {
       read: false,
     };
 
+    const notificationKey = notif.requestId
+      ? `${notif.type}|${notif.requestId}`
+      : `${notif.type}|${notif.title}|${notif.message}`;
+
     setNotifications((prev) => {
+      const alreadyExists = prev.some(
+        (item) => (item.requestId
+          ? `${item.type}|${item.requestId}`
+          : `${item.type}|${item.title}|${item.message}`) === notificationKey
+      );
+      if (alreadyExists) return prev;
       const updated = [newEntry, ...prev];
       try {
         localStorage.setItem('raksha_block_notifications', JSON.stringify(updated));
@@ -159,6 +169,19 @@ export default function App() {
 
     // Crisp Indian Railways control room chime
     playRailwayChime(false);
+  };
+
+  const getDepartmentRole = (department: BlockRequest['department']): UserRole => {
+    if (department === 'ENGINEERING') return 'ENG_OFFICER';
+    if (department === 'ST') return 'ST_OFFICER';
+    return 'TRD_OFFICER';
+  };
+
+  const isNotificationVisibleToUser = (item: AppNotification, user: User | null): boolean => {
+    if (!user) return false;
+    if (item.targetRole === 'ALL' || !item.targetRole) return true;
+    if (item.targetRole === user.role) return true;
+    return user.role === 'SECTION_CONTROLLER' && Boolean(item.department);
   };
 
   const handleToggleMute = () => {
@@ -208,15 +231,14 @@ export default function App() {
   };
 
   // Unread badge count tailored to active role & department
-  const unreadNotificationCount = notifications.filter((item) => {
-    if (item.read) return false;
-    if (!currentUser) return false;
-    if (item.targetRole === 'ALL' || !item.targetRole) return true;
-    if (item.targetRole === currentUser.role) return true;
-    if (currentUser.role !== 'SECTION_CONTROLLER' && item.department === currentUser.department) {
-      return true;
-    }
-    return false;
+  const unreadNotificationCount = notifications.filter((item, index, list) => {
+    if (item.read || !isNotificationVisibleToUser(item, currentUser)) return false;
+    const key = item.requestId
+      ? `${item.type}|${item.requestId}`
+      : `${item.type}|${item.title}|${item.message}`;
+    return list.findIndex((candidate) => (candidate.requestId
+      ? `${candidate.type}|${candidate.requestId}`
+      : `${candidate.type}|${candidate.title}|${candidate.message}`) === key) === index;
   }).length;
 
   // Initialize Supabase Data and Realtime Synchronization
@@ -333,7 +355,7 @@ export default function App() {
             message,
             requestId: record.id,
             department: record.department,
-            targetRole: 'ALL',
+            targetRole: getDepartmentRole(record.department),
             priority: record.priority === 'SAFETY_CRITICAL' ? 'HIGH' : 'NORMAL',
           });
 
@@ -522,7 +544,7 @@ export default function App() {
       message: `Requisition ${updatedReq.id} has been ${actionText} by Main Control for window ${timeWindow}.`,
       requestId: updatedReq.id,
       department: updatedReq.department,
-      targetRole: 'ALL',
+      targetRole: getDepartmentRole(updatedReq.department),
       priority: updatedReq.priority === 'SAFETY_CRITICAL' ? 'HIGH' : 'NORMAL',
     });
 
@@ -559,7 +581,7 @@ export default function App() {
       message: `✅ Safety Clearance Received: ${clearedReq.id} line cleared by Site Engineer (${engineerName}). All staff retreated, tools removed, OHE/S&T restored. Section reopened for train traffic.`,
       requestId: clearedReq.id,
       department: clearedReq.department,
-      targetRole: 'ALL', // Delivered to both Department Officer and Main Control Admin
+      targetRole: getDepartmentRole(clearedReq.department),
       priority: 'HIGH',
     });
 
