@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Plus,
   Search,
@@ -57,6 +57,12 @@ export const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({
 
   // View state: 'TABLE' (My Department Demands) or 'FORM' (Submit New Block Request)
   const [activeTab, setActiveTab] = useState<'TABLE' | 'FORM'>('TABLE');
+  const requestFormRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (activeTab !== 'FORM') return;
+    requestFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeTab]);
 
   // Success Banner state for Phase 2
   const [latestSubmittedId, setLatestSubmittedId] = useState<string | null>(null);
@@ -408,11 +414,13 @@ export const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({
       {/* CONDITIONAL RENDERING: FORM OR TABLE */}
       {activeTab === 'FORM' ? (
         /* Phase 2: Prominent Department Request Form */
-        <DepartmentBlockRequestForm
-          currentUser={currentUser}
-          onSubmitSuccess={handleFormSuccess}
-          onCancel={() => setActiveTab('TABLE')}
-        />
+        <div ref={requestFormRef}>
+          <DepartmentBlockRequestForm
+            currentUser={currentUser}
+            onSubmitSuccess={handleFormSuccess}
+            onCancel={() => setActiveTab('TABLE')}
+          />
+        </div>
       ) : (
         /* Phase 2: Updated Requests Table View ("My Department Demands") */
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
