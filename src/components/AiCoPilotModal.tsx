@@ -33,23 +33,23 @@ export const AiCoPilotModal: React.FC<AiCoPilotModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl border border-slate-300 shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white rounded-xl border border-slate-300 shadow-2xl max-w-3xl w-full min-w-0 max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Modal Top Bar */}
-        <div className="bg-[#000075] text-white px-6 py-4 flex items-center justify-between border-b-2 border-amber-400">
-          <div className="flex items-center space-x-3">
+        <div className="bg-[#000075] text-white px-3 sm:px-6 py-3 sm:py-4 flex items-start justify-between gap-2 border-b-2 border-amber-400">
+          <div className="flex items-start space-x-2 sm:space-x-3 min-w-0">
             <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center border border-white/20">
               <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-base text-white tracking-tight">
+              <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
+                <h3 className="font-bold text-sm sm:text-base text-white tracking-tight break-words">
                   AI Co-Pilot Decision Desk & Train Simulation
                 </h3>
                 <span className="bg-amber-400 text-blue-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">
                   Admin Authority
                 </span>
               </div>
-              <p className="text-xs text-blue-200">
+              <p className="text-[10px] sm:text-xs text-blue-200 leading-relaxed">
                 Indian Railways Delhi Division • Real-Time Movement Impact & Action Directives
               </p>
             </div>
@@ -64,7 +64,7 @@ export const AiCoPilotModal: React.FC<AiCoPilotModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-4">
+        <div className="p-3 sm:p-6 overflow-y-auto space-y-4 min-w-0">
           <AiCoPilotRecommendationEngine
             request={request}
             allRequests={allRequests}
@@ -81,8 +81,8 @@ export const AiCoPilotModal: React.FC<AiCoPilotModalProps> = ({
             onFeedbackToast={onFeedbackToast}
           />
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs text-slate-500">
-            <div className="flex items-center space-x-1.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-200 text-xs text-slate-500">
+            <div className="flex items-start space-x-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>All directives write directly to Supabase with WebSocket notification dispatch.</span>
             </div>

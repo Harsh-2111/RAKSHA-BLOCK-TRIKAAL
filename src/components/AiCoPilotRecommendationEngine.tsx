@@ -309,17 +309,17 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
   return (
     <div
       id="ai-copilot-recommendation-engine"
-      className={`rounded-xl border-2 border-indigo-200 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 p-4 shadow-sm text-xs text-slate-800 space-y-4 ${className}`}
+      className={`rounded-xl border-2 border-indigo-200 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 p-3 sm:p-4 shadow-sm text-xs text-slate-800 space-y-4 min-w-0 ${className}`}
     >
       {/* Engine Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-indigo-200">
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-start space-x-2.5 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-[#000075] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
             <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-sm text-[#000075] tracking-tight">
+          <div className="min-w-0">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
+              <span className="font-bold text-sm text-[#000075] tracking-tight break-words">
                 AI Co-Pilot Recommendation Engine
               </span>
               <span className="bg-amber-400 text-blue-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-2xs uppercase">
@@ -335,8 +335,8 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
         </div>
 
         {/* Live delay tag */}
-        <div className="flex-shrink-0">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#000075] text-white shadow-xs">
+        <div className="flex-shrink-0 max-w-full">
+          <span className="inline-flex flex-wrap items-center px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-[#000075] text-white shadow-xs">
             <span className="mr-1.5">🚆</span>
             <span>Estimated Delay: </span>
             <span className="text-amber-300 font-mono ml-1 font-bold">
@@ -359,8 +359,8 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
 
       {/* The 3 Actionable Recommendations */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+          <span className="font-bold text-slate-900 text-xs flex items-start space-x-1.5">
             <Zap className="w-4 h-4 text-amber-500" />
             <span>AI Real-Time Optimization Directives (3 Actionable Recommendations)</span>
           </span>
@@ -384,7 +384,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
                 <div className="w-6 h-6 rounded-md bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
                   1
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <h4 className="font-bold text-slate-900 text-xs flex items-center flex-wrap gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-blue-700" />
                   <span>Reschedule to Night Shift (01:00 - 04:00 hrs)</span>
                 </h4>
@@ -473,7 +473,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
                 <div className="w-6 h-6 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">
                   2
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <h4 className="font-bold text-slate-900 text-xs flex items-center flex-wrap gap-1.5">
                   <Gauge className="w-3.5 h-3.5 text-amber-700" />
                   <span>Auto-generate TSR (Temporary Speed Restriction Form T/409)</span>
                 </h4>
@@ -493,7 +493,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
 
               {/* Speed selector & editable order draft */}
               <div className="pl-8 pt-1 space-y-2">
-                <div className="flex items-center space-x-3 text-xs">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                   <span className="text-slate-600 font-medium">Select Restriction:</span>
                   <label className="inline-flex items-center space-x-1 cursor-pointer">
                     <input
@@ -576,7 +576,7 @@ export const AiCoPilotRecommendationEngine: React.FC<AiCoPilotRecommendationEngi
                 <div className="w-6 h-6 rounded-md bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-xs">
                   3
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <h4 className="font-bold text-slate-900 text-xs flex items-center flex-wrap gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-indigo-700" />
                   <span>Smart Bundling (Combine with S&T / TRD / Engineering)</span>
                 </h4>
