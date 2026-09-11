@@ -10,7 +10,6 @@ import {
   CheckSquare,
   Square,
   Lock,
-  Zap,
   ArrowRight
 } from 'lucide-react';
 import { BlockRequest, User } from '../types';
@@ -85,20 +84,17 @@ export const SafetyCheckoutModal: React.FC<SafetyCheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg border border-slate-300 shadow-2xl max-w-xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white rounded-lg border border-slate-300 shadow-2xl max-w-xl w-full max-h-[calc(100vh-1rem)] sm:max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header with authentic Indian Railways aesthetic */}
         <div className="bg-[#000075] text-white px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b-2 border-emerald-500">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-start space-x-3 min-w-0">
             <div className="w-9 h-9 rounded bg-emerald-600/30 flex items-center justify-center border border-emerald-400 shrink-0">
               <HardHat className="w-5 h-5 text-amber-300" />
             </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-white">
+            <div className="min-w-0">
+              <h3 className="font-bold text-sm sm:text-base text-white leading-snug">
                 Site Engineer Safety Checkout & Line Clearance
               </h3>
-              <p className="text-[11px] sm:text-xs text-blue-200">
-                Rule 15.06 & 15.08 General Rules (GR) • Formal Line Open Authorization
-              </p>
             </div>
           </div>
           <button
@@ -111,7 +107,7 @@ export const SafetyCheckoutModal: React.FC<SafetyCheckoutModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-4 text-xs text-slate-700 overflow-y-auto min-h-0">
           {/* Active Corridor Block Summary Banner */}
           <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
             <div className="flex items-center justify-between">
@@ -269,16 +265,6 @@ export const SafetyCheckoutModal: React.FC<SafetyCheckoutModalProps> = ({
             />
           </div>
 
-          {/* Real-time Notification Notice */}
-          <div className="p-3 bg-blue-50/80 border border-blue-200 rounded flex items-center space-x-2 text-[11px] text-[#000075]">
-            <Zap className="w-4 h-4 flex-shrink-0 text-amber-500" />
-            <span>
-              <strong>Real-Time Broadcast:</strong> Submitting will update status to{' '}
-              <strong>"Completed / Line Clear"</strong> and dispatch immediate audio chime notifications to{' '}
-              <strong>both {deptConfig.name} and Main Control Admin</strong>.
-            </span>
-          </div>
-
           {/* Modal Action Buttons */}
           <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-[11px] text-slate-500">
@@ -307,7 +293,7 @@ export const SafetyCheckoutModal: React.FC<SafetyCheckoutModalProps> = ({
                 type="submit"
                 id="btn-submit-safety-clearance"
                 disabled={!allThreeChecked || isSubmitting}
-                className={`px-5 py-2 text-xs font-bold rounded shadow-xs flex items-center space-x-1.5 transition-all ${
+                className={`px-5 py-2 text-xs font-bold rounded shadow-xs flex items-center justify-center space-x-1.5 transition-all w-full sm:w-auto ${
                   allThreeChecked && !isSubmitting
                     ? 'text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 cursor-pointer shadow-md'
                     : 'text-slate-400 bg-slate-200 border border-slate-300 cursor-not-allowed opacity-75'
